@@ -1,0 +1,45 @@
+{
+  "name": "gg-contracts",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.6",
+    "@nomiclabs/hardhat-ethers": "^2.1.1",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@typechain/hardhat": "^6.1.3",
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.8.3",
+    "chai": "^4.3.6",
+    "dotenv": "^16.0.3",
+    "ethereum-waffle": "^3.4.4",
+    "ethers": "^5.7.1",
+    "hardhat": "^2.11.2",
+    "hardhat-abi-exporter": "^2.10.0",
+    "hardhat-deploy": "^0.11.16",
+    "hardhat-gas-reporter": "^1.0.9",
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.24",
+    "solidity-coverage": "^0.8.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "scripts": {
+    "compile": "hardhat clean && hardhat compile",
+    "test": "hardhat --network hardhat test test/batchTransfer/*.ts",
+    "format": "prettier --write '*/**/*.{sol,ts,js}'",
+    "coverage": "hardhat --network hardhat coverage",
+    "deploy:local": "hardhat deploy --report-gas",
+    "deploy:chapel": "hardhat --network chapel deploy --export-all ./deployinfo.json --report-gas --reset",
+    "deploy:bsc": "hardhat --network bsc deploy --export-all ./deployinfo.json --report-gas --reset",
+    "upgrade": "hardhat --network chapel deploy --export-all ./deployinfo.json --tags Upgrade --report-gas",
+    "export-abi": "hardhat export-abi",
+    "update": "hardhat run --network bsc scripts/update.ts",
+    "verify": "hardhat --network chapel etherscan-verify --api-key"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3",
+    "@openzeppelin/contracts-upgradeable": "^4.8.3",
+    "glob": "^10.3.10"
+  }
+}
