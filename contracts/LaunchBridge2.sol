@@ -67,6 +67,12 @@ contract LaunchBridge2 is
     uint256 stETHAmount,
     uint256 daiAmount
   );
+  event WithdrawInterest(
+    address indexed user,
+    uint256 ethAmount,
+    uint256 stETHAmount,
+    uint256 daiAmount
+  );
   event ProposeUpgrade(address upgradeTo);
   event ResetProposedUpgrade();
 
@@ -198,6 +204,42 @@ contract LaunchBridge2 is
     _mintUSDShares(_INITIAL_TOKEN_HOLDER, daiBalance);
 
     _unpause();
+  }
+
+  /**
+   * @notice Withdraw interest by owner
+   */
+  function withdrawInterest() external onlyOwner {
+    uint256 contractETHBalance = address(this).balance;
+    uint256 ethAmountToMove = totalETHBalance() - totalETHShares;
+    uint256 stETHAmountToMove;
+    if (ethAmountToMove > contractETHBalance) {
+      stETHAmountToMove = ethAmountToMove - contractETHBalance;
+      ethAmountToMove = contractETHBalance;
+    }
+
+    uint256 contractDAIBalance = DAI.balanceOf(address(this));
+    uint256 daiAmountToMove = totalUSDBalance() - totalUSDShares;
+    if (daiAmountToMove > contractDAIBalance) {
+      DSR_MANAGER.exit(address(this), daiAmountToMove - contractDAIBalance);
+    }
+
+    if (stETHAmountToMove > 0) {
+      LIDO.transfer(msg.sender, stETHAmountToMove);
+    }
+    if (daiAmountToMove > 0) {
+      DAI.transfer(msg.sender, daiAmountToMove);
+    }
+    if (ethAmountToMove > 0) {
+      payable(msg.sender).transfer(ethAmountToMove);
+    }
+
+    emit WithdrawInterest(
+      msg.sender,
+      ethAmountToMove,
+      stETHAmountToMove,
+      daiAmountToMove
+    );
   }
 
   /**
